@@ -5,8 +5,15 @@
   <title>Champion Immunities</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: Arial, sans-serif; padding: 1em; }
-    #filters { display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 1em; align-items: flex-start; }
+    body { font-family: Arial, sans-serif; padding: 1em; margin: 0; }
+    h1 { margin-top: 0; }
+    #filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1em;
+      margin-bottom: 1em;
+      align-items: flex-start;
+    }
     #search, #class-filter {
       padding: .5em;
       font-size: 1em;
@@ -27,9 +34,41 @@
       gap: .25em;
       font-size: 0.9em;
     }
-    table { width:100%; border-collapse: collapse; margin-top: 1em; }
-    th, td { border:1px solid #ccc; padding: .5em; }
-    th { background: #f4f4f4; }
+
+    /* Card layout */
+    #champ-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1em;
+    }
+    .champ-card {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 1em;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .champ-name {
+      font-weight: bold;
+      font-size: 1.1em;
+      margin-bottom: .25em;
+    }
+    .champ-class {
+      display: inline-block;
+      font-size: 0.85em;
+      background: #eee;
+      padding: 0.2em 0.5em;
+      border-radius: 4px;
+      margin-bottom: .5em;
+    }
+    .champ-immunities {
+      font-size: 0.9em;
+      line-height: 1.4;
+    }
+    .no-results {
+      font-style: italic;
+      color: #888;
+    }
   </style>
 </head>
 <body>
@@ -43,16 +82,7 @@
     <div id="immunity-checkboxes"></div>
   </div>
 
-  <table id="champ-table">
-    <thead>
-      <tr>
-        <th>Champion</th>
-        <th>Class</th>
-        <th>Immunities</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <div id="champ-list"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
@@ -60,7 +90,7 @@
     const CSV_URL = 
       'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsFQvyGnN2E_bzcAAOW_n7tYpzAN9VexjM7jwuzm4XHqxLROdjWgD_1xbZWaFA3YEu-OF6QQoFfDiP/pub?output=csv';
 
-    const tbody = document.querySelector('#champ-table tbody');
+    const champList = document.getElementById('champ-list');
     const search = document.getElementById('search');
     const classFilter = document.getElementById('class-filter');
     const immContainer = document.getElementById('immunity-checkboxes');
@@ -103,7 +133,7 @@
         }).filter(c => c.name);
 
         populateFilters();
-        renderTable(champions);
+        renderCards(champions);
       }
     });
 
@@ -128,22 +158,35 @@
       });
     }
 
-    function renderTable(list) {
-      tbody.innerHTML = '';
+    function renderCards(list) {
+      champList.innerHTML = '';
       if (!list.length) {
-        tbody.innerHTML = '<tr><td colspan="3">No champions found.</td></tr>';
+        champList.innerHTML = '<div class="no-results">No champions found.</div>';
         return;
       }
 
       list.forEach(c => {
-        const tr = document.createElement('tr');
-        const immText = c.imms.map(i => `${i.type} (${i.value})`).join(', ');
-        tr.innerHTML = `
-          <td>${c.name}</td>
-          <td>${c.champClass || '—'}</td>
-          <td>${immText || 'None'}</td>
-        `;
-        tbody.appendChild(tr);
+        const card = document.createElement('div');
+        card.className = 'champ-card';
+
+        const name = document.createElement('div');
+        name.className = 'champ-name';
+        name.textContent = c.name;
+
+        const cls = document.createElement('div');
+        cls.className = 'champ-class';
+        cls.textContent = c.champClass || '—';
+
+        const imms = document.createElement('div');
+        imms.className = 'champ-immunities';
+        imms.textContent = c.imms.length
+          ? c.imms.map(i => `${i.type} (${i.value})`).join(', ')
+          : 'None';
+
+        card.appendChild(name);
+        card.appendChild(cls);
+        card.appendChild(imms);
+        champList.appendChild(card);
       });
     }
 
@@ -161,7 +204,7 @@
         return matchesName && matchesClass && matchesImms;
       });
 
-      renderTable(filtered);
+      renderCards(filtered);
     }
 
     search.addEventListener('input', applyFilters);
