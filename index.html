@@ -5,15 +5,19 @@
   <title>Champion Immunities</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+    /* make body a positioning context for the legend */
     body {
+      position: relative;
       font-family: Arial, sans-serif;
       padding: 1em;
       margin: 0;
       background: #f9f9f9;
     }
+
     h1 {
       margin-top: 0;
     }
+
     #filters {
       display: flex;
       flex-wrap: wrap;
@@ -21,10 +25,12 @@
       margin-bottom: 1em;
       align-items: flex-start;
     }
+
     #search, #class-filter {
       padding: .5em;
       font-size: 1em;
     }
+
     #immunity-checkboxes {
       display: flex;
       flex-wrap: wrap;
@@ -36,12 +42,14 @@
       min-width: 200px;
       background: #fff;
     }
+
     #immunity-checkboxes label {
       display: flex;
       align-items: center;
       gap: .25em;
       font-size: 0.9em;
     }
+
     #clear-filters {
       padding: .5em 1em;
       font-size: 1em;
@@ -55,12 +63,27 @@
       background: #f0f0f0;
     }
 
+    /* legend box in the top-right */
+    .legend {
+      position: absolute;
+      top: 1em;
+      right: 1em;
+      background: rgba(255,255,255,0.95);
+      padding: .5em 1em;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: .85em;
+      line-height: 1.4;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
     /* Card layout */
     #champ-list {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1em;
     }
+
     .champ-card {
       border-radius: 12px;
       padding: 1em;
@@ -136,6 +159,14 @@
 </head>
 <body>
 
+  <div class="legend">
+    <strong>Legend:</strong><br>
+    Y = Solo Immunity<br>
+    Y + S = Immunity via Synergy<br>
+    % = Resistance Percentage<br>
+    ⏱️ = Reduced Duration
+  </div>
+
   <h1>Champion Immunities</h1>
 
   <div id="filters">
@@ -180,9 +211,9 @@
     };
 
     Papa.parse(CSV_URL, {
-      download: true,
-      header: false,
-      skipEmptyLines: true,
+      download:      true,
+      header:        false,
+      skipEmptyLines:true,
       complete: ({ data }) => {
         if (data.length < 6) return;
 
@@ -194,7 +225,7 @@
           if (!name) return;
 
           const champClass = row[1]?.trim();
-          const imms = [];
+          const imms       = [];
 
           for (let i = 2; i < row.length; i++) {
             const val   = row[i]?.trim();
