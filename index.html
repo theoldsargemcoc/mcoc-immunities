@@ -252,3 +252,29 @@
 
     function applyFilters() {
       const q = search.value.toLowerCase
+      });
+    }
+
+    function applyFilters() {
+      const q = search.value.toLowerCase();
+      const selectedClass = classFilter.value;
+      const selectedImms = Array.from(document.querySelectorAll('input[name="immunity"]:checked')).map(cb => cb.value);
+
+      const filtered = champions.filter(c => {
+        const matchesName = !q || c.name.toLowerCase().includes(q);
+        const matchesClass = !selectedClass || c.champClass === selectedClass;
+        const matchesImms = selectedImms.every(sel =>
+          c.imms.some(i => i.type === sel)
+        );
+        return matchesName && matchesClass && matchesImms;
+      });
+
+      renderCards(filtered);
+    }
+
+    search.addEventListener('input', applyFilters);
+    classFilter.addEventListener('change', applyFilters);
+  })();
+  </script>
+</body>
+</html>
