@@ -16,7 +16,13 @@
   <h1>Champion Immunities</h1>
   <input id="search" placeholder="🔍 Search champions…" />
   <table id="champ-table">
-    <thead><tr><th>Champion</th><th>Immunities</th></tr></thead>
+    <thead>
+      <tr>
+        <th>Champion</th>
+        <th>Class</th>
+        <th>Immunities</th>
+      </tr>
+    </thead>
     <tbody></tbody>
   </table>
 
@@ -30,19 +36,21 @@
 
     Papa.parse(CSV_URL, {
       download: true,
-      header: false, // Treat all rows as raw arrays
+      header: false,
       skipEmptyLines: true,
       complete: ({ data }) => {
         if (data.length < 6) return;
 
         const headerRow = data[5]; // Row 6 = index 5
-        const rows = data.slice(6); // Start from row 7
+        const rows = data.slice(6); // Row 7+ = data
 
-        const nameIndex = 0; // Champion name
-        const immunityStart = 2; // Skip Champion and Class
+        const nameIndex = 0;
+        const classIndex = 1;
+        const immunityStart = 2;
 
         const champions = rows.map(row => {
           const name = row[nameIndex]?.trim();
+          const champClass = row[classIndex]?.trim();
           const imms = [];
 
           for (let i = immunityStart; i < row.length; i++) {
@@ -53,13 +61,14 @@
             }
           }
 
-          return { name, imms };
+          return { name, champClass, imms };
         }).filter(c => c.name);
 
         champions.forEach(c => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td>${c.name}</td>
+            <td>${c.champClass || '—'}</td>
             <td>${c.imms.join(', ') || 'None'}</td>
           `;
           tbody.appendChild(tr);
