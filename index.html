@@ -5,133 +5,72 @@
   <title>Champion Immunities</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 1em;
-      margin: 0;
-      background: #f9f9f9;
-    }
-    h1 {
-      margin-top: 0;
-    }
-    #filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1em;
-      margin-bottom: 1em;
-      align-items: flex-start;
-    }
-    #search, #class-filter {
-      padding: .5em;
-      font-size: 1em;
-    }
+    body { font-family: Arial, sans-serif; padding:1em; margin:0; background:#f9f9f9 }
+    h1 { margin-top:0 }
+    #filters { display:flex; flex-wrap:wrap; gap:1em; margin-bottom:1em; }
+    #search, #class-filter { padding:.5em; font-size:1em }
     #immunity-checkboxes {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .5em 1em;
-      max-height: 200px;
-      overflow-y: auto;
-      border: 1px solid #ccc;
-      padding: .5em;
-      min-width: 200px;
-      background: #fff;
+      display:flex; flex-wrap:wrap; gap:.5em 1em; max-height:200px;
+      overflow-y:auto; border:1px solid #ccc; padding:.5em; background:#fff
     }
     #immunity-checkboxes label {
-      display: flex;
-      align-items: center;
-      gap: .25em;
-      font-size: 0.9em;
+      display:flex; align-items:center; gap:.25em; font-size:.9em
     }
-
-    /* Card layout */
     #champ-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1em;
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+      gap:1em
     }
     .champ-card {
-      border-radius: 12px;
-      padding: 1em;
-      color: #000;
-      position: relative;
-      background: inherit;
-      box-shadow:
-        0 2px 4px rgba(0, 0, 0, 0.1),
-        0 6px 12px rgba(0, 0, 0, 0.1),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      overflow: hidden;
+      border-radius:12px; padding:1em; color:#000; position:relative;
+      background:inherit; box-shadow:
+        0 2px 4px rgba(0,0,0,0.1),
+        0 6px 12px rgba(0,0,0,0.1),
+        inset 0 0 0 1px rgba(255,255,255,0.1);
+      transition:transform .2s,box-shadow .2s; overflow:hidden
     }
     .champ-card:hover {
-      transform: translateY(-4px);
-      box-shadow:
-        0 4px 8px rgba(0, 0, 0, 0.15),
-        0 10px 20px rgba(0, 0, 0, 0.1),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+      transform:translateY(-4px); box-shadow:
+        0 4px 8px rgba(0,0,0,0.15),
+        0 10px 20px rgba(0,0,0,0.1),
+        inset 0 0 0 1px rgba(255,255,255,0.15)
     }
     .champ-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to bottom right, rgba(255,255,255,0.05), rgba(0,0,0,0.05));
-      pointer-events: none;
-      z-index: 0;
-      border-radius: 12px;
+      content:""; position:absolute; inset:0;
+      background:linear-gradient(to bottom right,rgba(255,255,255,0.05),rgba(0,0,0,0.05));
+      pointer-events:none; z-index:0; border-radius:12px
     }
-
-    .champ-name,
-    .champ-class,
-    .champ-immunities {
-      position: relative;
-      z-index: 1;
+    .champ-name, .champ-class, .champ-immunities {
+      position:relative; z-index:1
     }
-
-    .champ-name {
-      font-weight: bold;
-      font-size: 1.2em;
-      margin-bottom: .25em;
-    }
+    .champ-name { font-weight:bold; font-size:1.2em; margin-bottom:.25em }
     .champ-class {
-      display: inline-block;
-      font-size: 0.85em;
-      background: rgba(255,255,255,0.7);
-      padding: 0.2em 0.5em;
-      border-radius: 4px;
-      margin-bottom: .5em;
+      display:inline-block; font-size:.85em; background:rgba(255,255,255,0.7);
+      padding:.2em .5em; border-radius:4px; margin-bottom:.5em
     }
     .champ-immunities {
-      font-size: 0.9em;
-      line-height: 1.4;
-      background: rgba(255,255,255,0.7);
-      padding: 0.5em;
-      border-radius: 4px;
+      font-size:.9em; line-height:1.4; background:rgba(255,255,255,0.7);
+      padding:.5em; border-radius:4px
     }
-    .no-results {
-      font-style: italic;
-      color: #888;
-    }
-
-    /* Bold class colors */
-    .class-Science   { background: #4CAF50; }
-    .class-Mystic    { background: #9C27B0; }
-    .class-Cosmic    { background: #2196F3; }
-    .class-Tech      { background: #607D8B; }
-    .class-Skill     { background: #F44336; }
-    .class-Mutant    { background: #FFB300; }
-    .class-Unknown   { background: #9E9E9E; }
+    .no-results { font-style:italic; color:#888 }
+    .class-Science { background:#4CAF50 }
+    .class-Mystic  { background:#9C27B0 }
+    .class-Cosmic  { background:#2196F3 }
+    .class-Tech    { background:#607D8B }
+    .class-Skill   { background:#F44336 }
+    .class-Mutant  { background:#FFB300 }
+    .class-Unknown { background:#9E9E9E }
   </style>
 </head>
 <body>
   <h1>Champion Immunities</h1>
-
   <div id="filters">
-    <input id="search" placeholder="🔍 Search champions…" />
+    <input id="search" list="champions-list" placeholder="🔍 Search champions…" />
+    <datalist id="champions-list"></datalist>
     <select id="class-filter">
       <option value="">All Classes</option>
     </select>
     <div id="immunity-checkboxes"></div>
   </div>
-
   <div id="champ-list"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -139,133 +78,103 @@
   (function(){
     const CSV_URL =
       'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsFQvyGnN2E_bzcAAOW_n7tYpzAN9VexjM7jwuzm4XHqxLROdjWgD_1xbZWaFA3YEu-OF6QQoFfDiP/pub?output=csv';
-
     const champList = document.getElementById('champ-list');
-    const search = document.getElementById('search');
+    const search    = document.getElementById('search');
+    const dataList  = document.getElementById('champions-list');
     const classFilter = document.getElementById('class-filter');
     const immContainer = document.getElementById('immunity-checkboxes');
 
-    let champions = [];
-    let allClasses = new Set();
-    let allImmunities = new Set();
-
+    let champions = [], allClasses = new Set(), allImmunities = new Set();
     const classColors = {
-      Science: 'class-Science',
-      Mystic: 'class-Mystic',
-      Cosmic: 'class-Cosmic',
-      Tech: 'class-Tech',
-      Skill: 'class-Skill',
-      Mutant: 'class-Mutant'
+      Science:'class-Science', Mystic:'class-Mystic', Cosmic:'class-Cosmic',
+      Tech:'class-Tech', Skill:'class-Skill', Mutant:'class-Mutant'
     };
 
     Papa.parse(CSV_URL, {
-      download: true,
-      header: false,
-      skipEmptyLines: true,
-      complete: ({ data }) => {
-        if (data.length < 6) return;
-
-        const headerRow = data[5]; // row 6
-        const rows = data.slice(6); // row 7+
-
-        const nameIndex = 0;
-        const classIndex = 1;
-        const immunityStart = 2;
-
-        champions = rows.map(row => {
-          const name = row[nameIndex]?.trim();
-          const champClass = row[classIndex]?.trim();
+      download:true, header:false, skipEmptyLines:true,
+      complete:({data})=>{
+        if(data.length<6) return;
+        const headerRow = data[5], rows = data.slice(6);
+        rows.forEach(row=>{
+          const name = row[0]?.trim();
+          if(!name) return;
+          const champClass = row[1]?.trim();
           const imms = [];
-          for (let i = immunityStart; i < row.length; i++) {
-            const val = row[i]?.trim();
-            const label = headerRow[i]?.trim();
-            if (val && label) {
-              imms.push({ type: label, value: val });
-              allImmunities.add(label);
-            }
+          for(let i=2;i<row.length;i++){
+            const val = row[i]?.trim(), label = headerRow[i]?.trim();
+            if(val&&label){ imms.push({type:label,value:val}); allImmunities.add(label) }
           }
-          if (champClass) allClasses.add(champClass);
-          return { name, champClass, imms };
-        }).filter(c => c.name);
-
+          if(champClass) allClasses.add(champClass);
+          champions.push({name,champClass,imms});
+        });
         populateFilters();
+        populateAutocomplete();
         renderCards(champions);
       }
     });
 
-    function populateFilters() {
-      [...allClasses].sort().forEach(cls => {
-        const opt = document.createElement('option');
-        opt.value = cls;
-        opt.textContent = cls;
-        classFilter.appendChild(opt);
+    function populateFilters(){
+      [...allClasses].sort().forEach(cls=>{
+        const o=document.createElement('option');
+        o.value=cls; o.textContent=cls; classFilter.appendChild(o);
       });
-      [...allImmunities].sort().forEach(imm => {
-        const label = document.createElement('label');
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.value = imm;
-        checkbox.name = 'immunity';
-        checkbox.addEventListener('change', applyFilters);
-        label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(imm));
-        immContainer.appendChild(label);
+      [...allImmunities].sort().forEach(imm=>{
+        const lbl=document.createElement('label');
+        const cb =document.createElement('input');
+        cb.type='checkbox'; cb.value=imm; cb.name='immunity';
+        cb.addEventListener('change',applyFilters);
+        lbl.appendChild(cb); lbl.appendChild(document.createTextNode(imm));
+        immContainer.appendChild(lbl);
       });
     }
 
-    function renderCards(list) {
-      champList.innerHTML = '';
-      if (!list.length) {
-        champList.innerHTML = '<div class="no-results">No champions found.</div>';
+    function populateAutocomplete(){
+      champions.forEach(c=>{
+        const o=document.createElement('option');
+        o.value=c.name; dataList.appendChild(o);
+      });
+    }
+
+    function renderCards(list){
+      champList.innerHTML='';
+      if(!list.length){
+        champList.innerHTML='<div class="no-results">No champions found.</div>';
         return;
       }
-      list.forEach(c => {
-        const card = document.createElement('div');
-        const classKey = c.champClass || 'Unknown';
-        card.className = `champ-card ${classColors[classKey] || 'class-Unknown'}`;
-
-        const nameEl = document.createElement('div');
-        nameEl.className = 'champ-name';
-        nameEl.textContent = c.name;
-
-        const clsEl = document.createElement('div');
-        clsEl.className = 'champ-class';
-        clsEl.textContent = classKey;
-
-        const immsEl = document.createElement('div');
-        immsEl.className = 'champ-immunities';
-        immsEl.textContent = c.imms.length
-          ? c.imms.map(i => `${i.type} (${i.value})`).join(', ')
+      list.forEach(c=>{
+        const card=document.createElement('div');
+        const ck=c.champClass||'Unknown';
+        card.className=`champ-card ${classColors[ck]||'class-Unknown'}`;
+        const n=document.createElement('div');
+        n.className='champ-name'; n.textContent=c.name;
+        const cl=document.createElement('div');
+        cl.className='champ-class'; cl.textContent=ck;
+        const im=document.createElement('div');
+        im.className='champ-immunities';
+        im.textContent = c.imms.length
+          ? c.imms.map(i=>`${i.type} (${i.value})`).join(', ')
           : 'None';
-
-        card.appendChild(nameEl);
-        card.appendChild(clsEl);
-        card.appendChild(immsEl);
+        [n,cl,im].forEach(el=>card.appendChild(el));
         champList.appendChild(card);
       });
     }
 
-    function applyFilters() {
-      const q = search.value.toLowerCase();
-      const selClass = classFilter.value;
-      const selImms = Array.from(
-        document.querySelectorAll('input[name="immunity"]:checked')
-      ).map(cb => cb.value);
-
-      const filtered = champions.filter(c => {
-        const matchesName = !q || c.name.toLowerCase().includes(q);
-        const matchesClass = !selClass || c.champClass === selClass;
-        const matchesImms = selImms.every(sel =>
-          c.imms.some(i => i.type === sel)
-        );
-        return matchesName && matchesClass && matchesImms;
+    function applyFilters(){
+      const q=search.value.toLowerCase();
+      const sc=classFilter.value;
+      const si=Array.from(document.querySelectorAll('input[name="immunity"]:checked'))
+                   .map(cb=>cb.value);
+      const filtered=champions.filter(c=>{
+        const mName = !q || c.name.toLowerCase().includes(q);
+        const mClass= !sc||c.champClass===sc;
+        const mImm  = si.every(sel=>c.imms.some(i=>i.type===sel));
+        return mName && mClass && mImm;
       });
-
       renderCards(filtered);
     }
 
-    search.addEventListener('input', applyFilters);
-    classFilter.addEventListener('change', applyFilters);
+    search.addEventListener('input',applyFilters);
+    classFilter.addEventListener('change',applyFilters);
   })();
   </script>
 </body>
