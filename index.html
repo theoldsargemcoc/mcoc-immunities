@@ -6,12 +6,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body { font-family: Arial, sans-serif; padding: 1em; }
-    #filters { display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 1em; }
-    #search, #class-filter, #imm-filter {
+    #filters { display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 1em; align-items: flex-start; }
+    #search, #class-filter {
       padding: .5em;
       font-size: 1em;
     }
-    #imm-filter { height: 6em; min-width: 200px; }
+    #immunity-checkboxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5em 1em;
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: .5em;
+      min-width: 200px;
+    }
+    #immunity-checkboxes label {
+      display: flex;
+      align-items: center;
+      gap: .25em;
+      font-size: 0.9em;
+    }
     table { width:100%; border-collapse: collapse; margin-top: 1em; }
     th, td { border:1px solid #ccc; padding: .5em; }
     th { background: #f4f4f4; }
@@ -25,7 +40,7 @@
     <select id="class-filter">
       <option value="">All Classes</option>
     </select>
-    <select id="imm-filter" multiple></select>
+    <div id="immunity-checkboxes"></div>
   </div>
 
   <table id="champ-table">
@@ -48,7 +63,7 @@
     const tbody = document.querySelector('#champ-table tbody');
     const search = document.getElementById('search');
     const classFilter = document.getElementById('class-filter');
-    const immFilter = document.getElementById('imm-filter');
+    const immContainer = document.getElementById('immunity-checkboxes');
 
     let champions = [];
     let allClasses = new Set();
@@ -101,10 +116,15 @@
       });
 
       [...allImmunities].sort().forEach(imm => {
-        const opt = document.createElement('option');
-        opt.value = imm;
-        opt.textContent = imm;
-        immFilter.appendChild(opt);
+        const label = document.createElement('label');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = imm;
+        checkbox.name = 'immunity';
+        checkbox.addEventListener('change', applyFilters);
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(imm));
+        immContainer.appendChild(label);
       });
     }
 
@@ -130,7 +150,7 @@
     function applyFilters() {
       const q = search.value.toLowerCase();
       const selectedClass = classFilter.value;
-      const selectedImms = Array.from(immFilter.selectedOptions).map(o => o.value);
+      const selectedImms = Array.from(document.querySelectorAll('input[name="immunity"]:checked')).map(cb => cb.value);
 
       const filtered = champions.filter(c => {
         const matchesName = !q || c.name.toLowerCase().includes(q);
@@ -146,7 +166,6 @@
 
     search.addEventListener('input', applyFilters);
     classFilter.addEventListener('change', applyFilters);
-    immFilter.addEventListener('change', applyFilters);
   })();
   </script>
 </body>
