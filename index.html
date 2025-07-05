@@ -6,15 +6,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body { font-family: Arial, sans-serif; padding: 1em; }
+    #filters { display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 1em; }
+    #search, #class-filter, #imm-filter {
+      padding: .5em;
+      font-size: 1em;
+    }
+    #imm-filter { height: 6em; min-width: 200px; }
     table { width:100%; border-collapse: collapse; margin-top: 1em; }
     th, td { border:1px solid #ccc; padding: .5em; }
     th { background: #f4f4f4; }
-    #search { margin-bottom: 1em; padding: .5em; width: 100%; box-sizing: border-box; }
   </style>
 </head>
 <body>
   <h1>Champion Immunities</h1>
-  <input id="search" placeholder="🔍 Search champions…" />
+
+  <div id="filters">
+    <input id="search" placeholder="🔍 Search champions…" />
+    <select id="class-filter">
+      <option value="">All Classes</option>
+    </select>
+    <select id="imm-filter" multiple></select>
+  </div>
+
   <table id="champ-table">
     <thead>
       <tr>
@@ -31,8 +44,15 @@
   (function(){
     const CSV_URL = 
       'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsFQvyGnN2E_bzcAAOW_n7tYpzAN9VexjM7jwuzm4XHqxLROdjWgD_1xbZWaFA3YEu-OF6QQoFfDiP/pub?output=csv';
+
     const tbody = document.querySelector('#champ-table tbody');
     const search = document.getElementById('search');
+    const classFilter = document.getElementById('class-filter');
+    const immFilter = document.getElementById('imm-filter');
+
+    let champions = [];
+    let allClasses = new Set();
+    let allImmunities = new Set();
 
     Papa.parse(CSV_URL, {
       download: true,
@@ -48,7 +68,7 @@
         const classIndex = 1;
         const immunityStart = 2;
 
-        const champions = rows.map(row => {
+        champions = rows.map(row => {
           const name = row[nameIndex]?.trim();
           const champClass = row[classIndex]?.trim();
           const imms = [];
@@ -57,32 +77,76 @@
             const val = row[i]?.trim();
             const label = headerRow[i]?.trim();
             if (val && label) {
-              imms.push(`${label} (${val})`);
+              imms.push({ type: label, value: val });
+              allImmunities.add(label);
             }
           }
+
+          if (champClass) allClasses.add(champClass);
 
           return { name, champClass, imms };
         }).filter(c => c.name);
 
-        champions.forEach(c => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${c.name}</td>
-            <td>${c.champClass || '—'}</td>
-            <td>${c.imms.join(', ') || 'None'}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-
-        search.addEventListener('input', e => {
-          const q = e.target.value.toLowerCase();
-          tbody.querySelectorAll('tr').forEach(tr => {
-            const name = tr.cells[0].textContent.toLowerCase();
-            tr.style.display = name.includes(q) ? '' : 'none';
-          });
-        });
+        populateFilters();
+        renderTable(champions);
       }
     });
+
+    function populateFilters() {
+      [...allClasses].sort().forEach(cls => {
+        const opt = document.createElement('option');
+        opt.value = cls;
+        opt.textContent = cls;
+        classFilter.appendChild(opt);
+      });
+
+      [...allImmunities].sort().forEach(imm => {
+        const opt = document.createElement('option');
+        opt.value = imm;
+        opt.textContent = imm;
+        immFilter.appendChild(opt);
+      });
+    }
+
+    function renderTable(list) {
+      tbody.innerHTML = '';
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="3">No champions found.</td></tr>';
+        return;
+      }
+
+      list.forEach(c => {
+        const tr = document.createElement('tr');
+        const immText = c.imms.map(i => `${i.type} (${i.value})`).join(', ');
+        tr.innerHTML = `
+          <td>${c.name}</td>
+          <td>${c.champClass || '—'}</td>
+          <td>${immText || 'None'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function applyFilters() {
+      const q = search.value.toLowerCase();
+      const selectedClass = classFilter.value;
+      const selectedImms = Array.from(immFilter.selectedOptions).map(o => o.value);
+
+      const filtered = champions.filter(c => {
+        const matchesName = !q || c.name.toLowerCase().includes(q);
+        const matchesClass = !selectedClass || c.champClass === selectedClass;
+        const matchesImms = selectedImms.every(sel =>
+          c.imms.some(i => i.type === sel)
+        );
+        return matchesName && matchesClass && matchesImms;
+      });
+
+      renderTable(filtered);
+    }
+
+    search.addEventListener('input', applyFilters);
+    classFilter.addEventListener('change', applyFilters);
+    immFilter.addEventListener('change', applyFilters);
   })();
   </script>
 </body>
