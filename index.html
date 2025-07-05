@@ -11,9 +11,11 @@
       margin: 0;
       background: #f9f9f9;
     }
+
     h1 {
       margin-top: 0;
     }
+
     #filters {
       display: flex;
       flex-wrap: wrap;
@@ -21,10 +23,13 @@
       margin-bottom: 1em;
       align-items: flex-start;
     }
-    #search, #class-filter {
+
+    #search,
+    #class-filter {
       padding: .5em;
       font-size: 1em;
     }
+
     #immunity-checkboxes {
       display: flex;
       flex-wrap: wrap;
@@ -36,12 +41,14 @@
       min-width: 200px;
       background: #fff;
     }
+
     #immunity-checkboxes label {
       display: flex;
       align-items: center;
       gap: .25em;
       font-size: 0.9em;
     }
+
     /* Clear Filters button */
     #clear-filters {
       padding: .5em 1em;
@@ -52,6 +59,7 @@
       cursor: pointer;
       transition: background 0.2s;
     }
+
     #clear-filters:hover {
       background: #f0f0f0;
     }
@@ -62,6 +70,7 @@
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1em;
     }
+
     .champ-card {
       border-radius: 12px;
       padding: 1em;
@@ -75,6 +84,7 @@
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       overflow: hidden;
     }
+
     .champ-card:hover {
       transform: translateY(-4px);
       box-shadow:
@@ -82,11 +92,14 @@
         0 10px 20px rgba(0, 0, 0, 0.1),
         inset 0 0 0 1px rgba(255, 255, 255, 0.15);
     }
+
     .champ-card::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(to bottom right, rgba(255,255,255,0.05), rgba(0,0,0,0.05));
+      background: linear-gradient(to bottom right,
+        rgba(255,255,255,0.05),
+        rgba(0,0,0,0.05));
       pointer-events: none;
       z-index: 0;
       border-radius: 12px;
@@ -104,6 +117,7 @@
       font-size: 1.2em;
       margin-bottom: .25em;
     }
+
     .champ-class {
       display: inline-block;
       font-size: 0.85em;
@@ -112,13 +126,27 @@
       border-radius: 4px;
       margin-bottom: .5em;
     }
+
     .champ-immunities {
       font-size: 0.9em;
       line-height: 1.4;
       background: transparent;
-      padding: 0.5em;
-      border-radius: 4px;
+      padding: 0;
+      margin-top: .5em;
     }
+
+    .champ-immunities .immunity-base {
+      font-weight: bold;
+      margin-bottom: 0.2em;
+    }
+
+    .champ-immunities .immunity-synergy {
+      font-size: 0.85em;
+      margin-left: 1em;
+      color: #555;
+      margin-bottom: 0.5em;
+    }
+
     .no-results {
       font-style: italic;
       color: #888;
@@ -135,6 +163,7 @@
   </style>
 </head>
 <body>
+
   <h1>Champion Immunities</h1>
 
   <div id="filters">
@@ -154,16 +183,16 @@
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
-  (function(){
+  (function() {
     const CSV_URL =
       'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsFQvyGnN2E_bzcAAOW_n7tYpzAN9VexjM7jwuzm4XHqxLROdjWgD_1xbZWaFA3YEu-OF6QQoFfDiP/pub?output=csv';
 
-    const champList       = document.getElementById('champ-list');
-    const search          = document.getElementById('search');
-    const dataList        = document.getElementById('champions-list');
-    const classFilter     = document.getElementById('class-filter');
-    const immContainer    = document.getElementById('immunity-checkboxes');
-    const clearBtn        = document.getElementById('clear-filters');
+    const champList    = document.getElementById('champ-list');
+    const search       = document.getElementById('search');
+    const dataList     = document.getElementById('champions-list');
+    const classFilter  = document.getElementById('class-filter');
+    const immContainer = document.getElementById('immunity-checkboxes');
+    const clearBtn     = document.getElementById('clear-filters');
 
     let champions = [];
     let allClasses = new Set();
@@ -185,11 +214,11 @@
       complete: ({ data }) => {
         if (data.length < 6) return;
 
-        const headerRow = data[5];      // row 6
-        const rows      = data.slice(6);// row 7+
+        const headerRow = data[5];
+        const rows      = data.slice(6);
 
         rows.forEach(row => {
-          const name      = row[0]?.trim();
+          const name = row[0]?.trim();
           if (!name) return;
 
           const champClass = row[1]?.trim();
@@ -217,7 +246,7 @@
     function populateFilters() {
       [...allClasses].sort().forEach(cls => {
         const opt = document.createElement('option');
-        opt.value = cls;
+        opt.value   = cls;
         opt.textContent = cls;
         classFilter.appendChild(opt);
       });
@@ -256,23 +285,45 @@
         const classKey = c.champClass || 'Unknown';
         card.className = `champ-card ${classColors[classKey] || 'class-Unknown'}`;
 
-        const n = document.createElement('div');
-        n.className = 'champ-name';
-        n.textContent = c.name;
+        // Name
+        const nameEl = document.createElement('div');
+        nameEl.className = 'champ-name';
+        nameEl.textContent = c.name;
+        card.appendChild(nameEl);
 
-        const cl = document.createElement('div');
-        cl.className = 'champ-class';
-        cl.textContent = classKey;
+        // Class
+        const classEl = document.createElement('div');
+        classEl.className = 'champ-class';
+        classEl.textContent = classKey;
+        card.appendChild(classEl);
 
-        const im = document.createElement('div');
-        im.className = 'champ-immunities';
-        im.textContent = c.imms.length
-          ? c.imms.map(i => `${i.type} (${i.value})`).join(', ')
-          : 'None';
+        // Immunities
+        const imContainer = document.createElement('div');
+        imContainer.className = 'champ-immunities';
 
-        card.appendChild(n);
-        card.appendChild(cl);
-        card.appendChild(im);
+        if (c.imms.length) {
+          c.imms.forEach(i => {
+            if (i.value.includes('+')) {
+              const base = document.createElement('div');
+              base.className = 'immunity-base';
+              base.textContent = i.type;
+              imContainer.appendChild(base);
+
+              const synergy = document.createElement('div');
+              synergy.className = 'immunity-synergy';
+              synergy.textContent = i.value;
+              imContainer.appendChild(synergy);
+            } else {
+              const line = document.createElement('div');
+              line.textContent = `${i.type} (${i.value})`;
+              imContainer.appendChild(line);
+            }
+          });
+        } else {
+          imContainer.textContent = 'None';
+        }
+
+        card.appendChild(imContainer);
         champList.appendChild(card);
       });
     }
@@ -280,20 +331,23 @@
     function applyFilters() {
       const q  = search.value.toLowerCase();
       const sc = classFilter.value;
-      const si = Array.from(document.querySelectorAll('input[name="immunity"]:checked'))
-                    .map(cb => cb.value);
+      const si = Array.from(
+        document.querySelectorAll('input[name="immunity"]:checked')
+      ).map(cb => cb.value);
 
       const filtered = champions.filter(c => {
         const mName  = !q   || c.name.toLowerCase().includes(q);
         const mClass = !sc  || c.champClass === sc;
-        const mImm   = si.every(sel => c.imms.some(i => i.type === sel));
+        const mImm   = si.every(sel =>
+          c.imms.some(i => i.type === sel)
+        );
         return mName && mClass && mImm;
       });
 
       renderCards(filtered);
     }
 
-    // wire up filters
+    // Wire up filters
     search.addEventListener('input', applyFilters);
     classFilter.addEventListener('change', applyFilters);
 
@@ -301,7 +355,8 @@
     clearBtn.addEventListener('click', () => {
       search.value = '';
       classFilter.value = '';
-      document.querySelectorAll('input[name="immunity"]')
+      document
+        .querySelectorAll('input[name="immunity"]')
         .forEach(cb => cb.checked = false);
       applyFilters();
     });
