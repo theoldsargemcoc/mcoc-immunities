@@ -32,18 +32,26 @@
       download: true,
       skipEmptyLines: true,
       complete: ({ data }) => {
-        // Skip first 6 rows (legend + header)
-        const sliced = data.slice(6);
-        const [headerRow, ...rows] = sliced;
+        if (data.length < 7) return;
 
-        const nameKey = headerRow[0];
-        const immunityKeys = headerRow.slice(2); // skip Champion and Class
+        const headerRow = data[6]; // Row 7 = index 6
+        const rows = data.slice(7); // Data starts at row 8
+
+        const nameIndex = 0; // Champion name
+        const immunityStart = 2; // Skip Champion and Class
 
         const champions = rows.map(row => {
-          const name = row[0]?.trim();
-          const imms = row.slice(2)
-            .map((val, i) => val?.trim() ? `${immunityKeys[i]} (${val})` : null)
-            .filter(Boolean);
+          const name = row[nameIndex]?.trim();
+          const imms = [];
+
+          for (let i = immunityStart; i < row.length; i++) {
+            const val = row[i]?.trim();
+            const label = headerRow[i]?.trim();
+            if (val && label) {
+              imms.push(`${label} (${val})`);
+            }
+          }
+
           return { name, imms };
         }).filter(c => c.name);
 
