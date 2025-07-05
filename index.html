@@ -5,7 +5,7 @@
   <title>Champion Immunities</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: Arial, sans-serif; padding: 1em; margin: 0; }
+    body { font-family: Arial, sans-serif; padding: 1em; margin: 0; background: #f9f9f9; }
     h1 { margin-top: 0; }
     #filters {
       display: flex;
@@ -27,6 +27,7 @@
       border: 1px solid #ccc;
       padding: .5em;
       min-width: 200px;
+      background: #fff;
     }
     #immunity-checkboxes label {
       display: flex;
@@ -42,21 +43,24 @@
       gap: 1em;
     }
     .champ-card {
-      border: 1px solid #ccc;
       border-radius: 6px;
       padding: 1em;
-      background: #fff;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+    .champ-card:hover {
+      transform: scale(1.02);
     }
     .champ-name {
       font-weight: bold;
-      font-size: 1.1em;
+      font-size: 1.2em;
       margin-bottom: .25em;
     }
     .champ-class {
       display: inline-block;
       font-size: 0.85em;
-      background: #eee;
+      background: rgba(255,255,255,0.2);
       padding: 0.2em 0.5em;
       border-radius: 4px;
       margin-bottom: .5em;
@@ -69,6 +73,15 @@
       font-style: italic;
       color: #888;
     }
+
+    /* Class colors */
+    .class-Science   { background: #4CAF50; }
+    .class-Mystic    { background: #9C27B0; }
+    .class-Cosmic    { background: #2196F3; }
+    .class-Tech      { background: #607D8B; }
+    .class-Skill     { background: #F44336; }
+    .class-Mutant    { background: #FFB300; }
+    .class-Unknown   { background: #9E9E9E; }
   </style>
 </head>
 <body>
@@ -98,6 +111,15 @@
     let champions = [];
     let allClasses = new Set();
     let allImmunities = new Set();
+
+    const classColors = {
+      Science: 'class-Science',
+      Mystic: 'class-Mystic',
+      Cosmic: 'class-Cosmic',
+      Tech: 'class-Tech',
+      Skill: 'class-Skill',
+      Mutant: 'class-Mutant'
+    };
 
     Papa.parse(CSV_URL, {
       download: true,
@@ -167,7 +189,8 @@
 
       list.forEach(c => {
         const card = document.createElement('div');
-        card.className = 'champ-card';
+        const classKey = c.champClass || 'Unknown';
+        card.className = `champ-card ${classColors[classKey] || 'class-Unknown'}`;
 
         const name = document.createElement('div');
         name.className = 'champ-name';
@@ -175,7 +198,7 @@
 
         const cls = document.createElement('div');
         cls.className = 'champ-class';
-        cls.textContent = c.champClass || '—';
+        cls.textContent = classKey;
 
         const imms = document.createElement('div');
         imms.className = 'champ-immunities';
