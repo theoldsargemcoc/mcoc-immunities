@@ -137,7 +137,7 @@
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
   (function(){
-    const CSV_URL = 
+    const CSV_URL =
       'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsFQvyGnN2E_bzcAAOW_n7tYpzAN9VexjM7jwuzm4XHqxLROdjWgD_1xbZWaFA3YEu-OF6QQoFfDiP/pub?output=csv';
 
     const champList = document.getElementById('champ-list');
@@ -165,8 +165,8 @@
       complete: ({ data }) => {
         if (data.length < 6) return;
 
-        const headerRow = data[5]; // Row 6 = index 5
-        const rows = data.slice(6); // Row 7+ = data
+        const headerRow = data[5]; // row 6
+        const rows = data.slice(6); // row 7+
 
         const nameIndex = 0;
         const classIndex = 1;
@@ -176,7 +176,6 @@
           const name = row[nameIndex]?.trim();
           const champClass = row[classIndex]?.trim();
           const imms = [];
-
           for (let i = immunityStart; i < row.length; i++) {
             const val = row[i]?.trim();
             const label = headerRow[i]?.trim();
@@ -185,9 +184,7 @@
               allImmunities.add(label);
             }
           }
-
           if (champClass) allClasses.add(champClass);
-
           return { name, champClass, imms };
         }).filter(c => c.name);
 
@@ -203,7 +200,6 @@
         opt.textContent = cls;
         classFilter.appendChild(opt);
       });
-
       [...allImmunities].sort().forEach(imm => {
         const label = document.createElement('label');
         const checkbox = document.createElement('input');
@@ -223,47 +219,43 @@
         champList.innerHTML = '<div class="no-results">No champions found.</div>';
         return;
       }
-
       list.forEach(c => {
         const card = document.createElement('div');
         const classKey = c.champClass || 'Unknown';
         card.className = `champ-card ${classColors[classKey] || 'class-Unknown'}`;
 
-        const name = document.createElement('div');
-        name.className = 'champ-name';
-        name.textContent = c.name;
+        const nameEl = document.createElement('div');
+        nameEl.className = 'champ-name';
+        nameEl.textContent = c.name;
 
-        const cls = document.createElement('div');
-        cls.className = 'champ-class';
-        cls.textContent = classKey;
+        const clsEl = document.createElement('div');
+        clsEl.className = 'champ-class';
+        clsEl.textContent = classKey;
 
-        const imms = document.createElement('div');
-        imms.className = 'champ-immunities';
-        imms.textContent = c.imms.length
+        const immsEl = document.createElement('div');
+        immsEl.className = 'champ-immunities';
+        immsEl.textContent = c.imms.length
           ? c.imms.map(i => `${i.type} (${i.value})`).join(', ')
           : 'None';
 
-        card.appendChild(name);
-        card.appendChild(cls);
-        card.appendChild(imms);
+        card.appendChild(nameEl);
+        card.appendChild(clsEl);
+        card.appendChild(immsEl);
         champList.appendChild(card);
       });
     }
 
     function applyFilters() {
-      const q = search.value.toLowerCase
-      });
-    }
-
-    function applyFilters() {
       const q = search.value.toLowerCase();
-      const selectedClass = classFilter.value;
-      const selectedImms = Array.from(document.querySelectorAll('input[name="immunity"]:checked')).map(cb => cb.value);
+      const selClass = classFilter.value;
+      const selImms = Array.from(
+        document.querySelectorAll('input[name="immunity"]:checked')
+      ).map(cb => cb.value);
 
       const filtered = champions.filter(c => {
         const matchesName = !q || c.name.toLowerCase().includes(q);
-        const matchesClass = !selectedClass || c.champClass === selectedClass;
-        const matchesImms = selectedImms.every(sel =>
+        const matchesClass = !selClass || c.champClass === selClass;
+        const matchesImms = selImms.every(sel =>
           c.imms.some(i => i.type === sel)
         );
         return matchesName && matchesClass && matchesImms;
