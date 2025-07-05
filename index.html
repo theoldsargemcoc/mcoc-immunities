@@ -5,88 +5,121 @@
   <title>Champion Immunities</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-  body { font-family: Arial, sans-serif; padding: 1em; margin: 0; background: #f9f9f9; }
-  h1 { margin-top: 0; }
-  #filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1em;
-    margin-bottom: 1em;
-    align-items: flex-start;
-  }
-  #search, #class-filter {
-    padding: .5em;
-    font-size: 1em;
-  }
-  #immunity-checkboxes {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .5em 1em;
-    max-height: 200px;
-    overflow-y: auto;
-    border: 1px solid #ccc;
-    padding: .5em;
-    min-width: 200px;
-    background: #fff;
-  }
-  #immunity-checkboxes label {
-    display: flex;
-    align-items: center;
-    gap: .25em;
-    font-size: 0.9em;
-  }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 1em;
+      margin: 0;
+      background: #f9f9f9;
+    }
+    h1 {
+      margin-top: 0;
+    }
+    #filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1em;
+      margin-bottom: 1em;
+      align-items: flex-start;
+    }
+    #search, #class-filter {
+      padding: .5em;
+      font-size: 1em;
+    }
+    #immunity-checkboxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5em 1em;
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: .5em;
+      min-width: 200px;
+      background: #fff;
+    }
+    #immunity-checkboxes label {
+      display: flex;
+      align-items: center;
+      gap: .25em;
+      font-size: 0.9em;
+    }
 
-  /* Card layout */
-  #champ-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1em;
-  }
-  .champ-card {
-    border-radius: 6px;
-    padding: 1em;
-    color: #000; /* Keep text black */
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease;
-    position: relative;
-  }
-  .champ-card:hover {
-    transform: scale(1.02);
-  }
-  .champ-name {
-    font-weight: bold;
-    font-size: 1.2em;
-    margin-bottom: .25em;
-  }
-  .champ-class {
-    display: inline-block;
-    font-size: 0.85em;
-    background: rgba(255,255,255,0.7);
-    padding: 0.2em 0.5em;
-    border-radius: 4px;
-    margin-bottom: .5em;
-  }
-  .champ-immunities {
-    font-size: 0.9em;
-    line-height: 1.4;
-    background: rgba(255,255,255,0.7);
-    padding: 0.5em;
-    border-radius: 4px;
-  }
-  .no-results {
-    font-style: italic;
-    color: #888;
-  }
+    /* Card layout */
+    #champ-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1em;
+    }
+    .champ-card {
+      border-radius: 12px;
+      padding: 1em;
+      color: #000;
+      position: relative;
+      background: inherit;
+      box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.1),
+        0 6px 12px rgba(0, 0, 0, 0.1),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      overflow: hidden;
+    }
+    .champ-card:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.15),
+        0 10px 20px rgba(0, 0, 0, 0.1),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+    }
+    .champ-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom right, rgba(255,255,255,0.05), rgba(0,0,0,0.05));
+      pointer-events: none;
+      z-index: 0;
+      border-radius: 12px;
+    }
 
-  /* Bold class colors */
-  .class-Science   { background: #4CAF50; }
-  .class-Mystic    { background: #9C27B0; }
-  .class-Cosmic    { background: #2196F3; }
-  .class-Tech      { background: #607D8B; }
-  .class-Skill     { background: #F44336; }
-  .class-Mutant    { background: #FFB300; }
-  .class-Unknown   { background: #9E9E9E; }
-</style>
+    .champ-name,
+    .champ-class,
+    .champ-immunities {
+      position: relative;
+      z-index: 1;
+    }
+
+    .champ-name {
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: .25em;
+    }
+    .champ-class {
+      display: inline-block;
+      font-size: 0.85em;
+      background: rgba(255,255,255,0.7);
+      padding: 0.2em 0.5em;
+      border-radius: 4px;
+      margin-bottom: .5em;
+    }
+    .champ-immunities {
+      font-size: 0.9em;
+      line-height: 1.4;
+      background: rgba(255,255,255,0.7);
+      padding: 0.5em;
+      border-radius: 4px;
+    }
+    .no-results {
+      font-style: italic;
+      color: #888;
+    }
+
+    /* Bold class colors */
+    .class-Science   { background: #4CAF50; }
+    .class-Mystic    { background: #9C27B0; }
+    .class-Cosmic    { background: #2196F3; }
+    .class-Tech      { background: #607D8B; }
+    .class-Skill     { background: #F44336; }
+    .class-Mutant    { background: #FFB300; }
+    .class-Unknown   { background: #9E9E9E; }
+  </style>
 </head>
 <body>
   <h1>Champion Immunities</h1>
@@ -218,25 +251,4 @@
     }
 
     function applyFilters() {
-      const q = search.value.toLowerCase();
-      const selectedClass = classFilter.value;
-      const selectedImms = Array.from(document.querySelectorAll('input[name="immunity"]:checked')).map(cb => cb.value);
-
-      const filtered = champions.filter(c => {
-        const matchesName = !q || c.name.toLowerCase().includes(q);
-        const matchesClass = !selectedClass || c.champClass === selectedClass;
-        const matchesImms = selectedImms.every(sel =>
-          c.imms.some(i => i.type === sel)
-        );
-        return matchesName && matchesClass && matchesImms;
-      });
-
-      renderCards(filtered);
-    }
-
-    search.addEventListener('input', applyFilters);
-    classFilter.addEventListener('change', applyFilters);
-  })();
-  </script>
-</body>
-</html>
+      const q = search.value.toLowerCase
