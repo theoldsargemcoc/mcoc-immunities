@@ -45,10 +45,10 @@
   .champ-card {
     border-radius: 6px;
     padding: 1em;
-    color: #000; /* Make all text black */
+    color: #000; /* Keep text black */
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     transition: transform 0.2s ease;
-    background: #fff;
+    position: relative;
   }
   .champ-card:hover {
     transform: scale(1.02);
@@ -61,7 +61,7 @@
   .champ-class {
     display: inline-block;
     font-size: 0.85em;
-    background: rgba(0,0,0,0.05);
+    background: rgba(255,255,255,0.7);
     padding: 0.2em 0.5em;
     border-radius: 4px;
     margin-bottom: .5em;
@@ -69,20 +69,23 @@
   .champ-immunities {
     font-size: 0.9em;
     line-height: 1.4;
+    background: rgba(255,255,255,0.7);
+    padding: 0.5em;
+    border-radius: 4px;
   }
   .no-results {
     font-style: italic;
     color: #888;
   }
 
-  /* Class colors (light backgrounds for black text) */
-  .class-Science   { background: #E8F5E9; }
-  .class-Mystic    { background: #F3E5F5; }
-  .class-Cosmic    { background: #E3F2FD; }
-  .class-Tech      { background: #ECEFF1; }
-  .class-Skill     { background: #FFEBEE; }
-  .class-Mutant    { background: #FFF8E1; }
-  .class-Unknown   { background: #F5F5F5; }
+  /* Bold class colors */
+  .class-Science   { background: #4CAF50; }
+  .class-Mystic    { background: #9C27B0; }
+  .class-Cosmic    { background: #2196F3; }
+  .class-Tech      { background: #607D8B; }
+  .class-Skill     { background: #F44336; }
+  .class-Mutant    { background: #FFB300; }
+  .class-Unknown   { background: #9E9E9E; }
 </style>
 </head>
 <body>
