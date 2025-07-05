@@ -155,6 +155,24 @@
     .class-Skill     { background: #F44336; }
     .class-Mutant    { background: #FFB300; }
     .class-Unknown   { background: #9E9E9E; }
+
+    /* Responsive tweaks for small screens */
+    @media (max-width: 600px) {
+      /* stack filters vertically */
+      #filters {
+        flex-direction: column;
+      }
+      /* single-column card layout */
+      #champ-list {
+        grid-template-columns: 1fr;
+      }
+      /* move legend into flow above header */
+      .legend {
+        position: static;
+        margin-bottom: 1em;
+        text-align: left;
+      }
+    }
   </style>
 </head>
 <body>
